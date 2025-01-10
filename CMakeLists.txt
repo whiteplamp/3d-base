@@ -25,8 +25,8 @@ endif()
 # Our Project
 
 add_executable(${PROJECT_NAME} src/main.cpp
-        src/figures/circle.h
-        src/figures/line.h)
+        src/figures/square.h
+)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 

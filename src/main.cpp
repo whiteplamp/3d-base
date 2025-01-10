@@ -2,7 +2,7 @@
 #include <valarray>
 
 #include "raylib.h"
-#include "figures/circle.h"
+#include "figures/square.h"
 
 int screenWidth = 800;
 int screenHeight = 600;
@@ -16,25 +16,11 @@ Vector2 getPointOnCircleWithAngle(const float alpha, const float radius) {
 
 int main()
 {
-    InitWindow(screenWidth, screenHeight, "Sphere");
-
-    float alpha = 0.0f;
-
-    constexpr float ALPHA_STEP = 0.01f;
-
-    float cameraRadius = 10.0f;
-
-    Vector2 cameraPos = getPointOnCircleWithAngle(alpha, cameraRadius);
-    Camera camera = { 0 };
-
-    camera.position = (Vector3){ cameraPos.x, 5.0f, cameraPos.y };
-
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    InitWindow(screenWidth, screenHeight, "2d light moving");
 
     SetTargetFPS(60);
+
+    auto square = Square((Vector2){(float) screenWidth / 2, (float) screenHeight / 2} , (Vector2){20.0f, 20.0f}, BLACK);
 
     while (!WindowShouldClose())
     {
@@ -43,21 +29,13 @@ int main()
 
         ClearBackground(RAYWHITE);
 
-        BeginMode3D(camera);
+        square.draw();
 
-        DrawSphereWires((Vector3){0.0f, 0.0f, 0.0f}, 2.0f, 16, 16, LIME);
-
-        DrawGrid(10, 1.0f);
-
-        EndMode3D();
 
         DrawFPS(10, 10);
 
         EndDrawing();
-        alpha += ALPHA_STEP;
-        auto point = getPointOnCircleWithAngle(alpha, cameraRadius);
-        camera.position.x = point.x;
-        camera.position.z = point.y;
+
     }
 
     CloseWindow();
