@@ -26,6 +26,7 @@ endif()
 
 add_executable(${PROJECT_NAME} src/main.cpp
         src/figures/square.h
+        src/entities/field.h
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
