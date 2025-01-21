@@ -1,11 +1,19 @@
+#include <iostream>
 #include <math.h>
+#include <memory>
 #include <valarray>
+#include <vector>
 
+#include "button.h"
 #include "raylib.h"
+#include "screen.h"
 #include "figures/circle.h"
+#include "figures/cube.h"
+#include "viewports/main_viewport.h"
+#include "viewports/menu_viewport.h"
 
-int screenWidth = 800;
-int screenHeight = 600;
+int screenWidth = 1600;
+int screenHeight = 900;
 
 Vector2 getPointOnCircleWithAngle(const float alpha, const float radius) {
     const float pointX = radius * cos(alpha);
@@ -16,50 +24,64 @@ Vector2 getPointOnCircleWithAngle(const float alpha, const float radius) {
 
 int main()
 {
-    InitWindow(screenWidth, screenHeight, "Sphere");
+    InitWindow(screenWidth, screenHeight, "3D redactor");
 
-    float alpha = 0.0f;
+    Camera viewPortCamera  = { 0 };
 
-    constexpr float ALPHA_STEP = 0.01f;
+    viewPortCamera.position = (Vector3){ 100.0f, 100.0f, 105.0f };
 
-    float cameraRadius = 10.0f;
+    viewPortCamera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+    viewPortCamera.up = (Vector3){ 0.0f, 0.1f, 0.0f };
+    viewPortCamera.fovy = 60.0f;
+    viewPortCamera.projection = CAMERA_PERSPECTIVE;
 
-    Vector2 cameraPos = getPointOnCircleWithAngle(alpha, cameraRadius);
-    Camera camera = { 0 };
+    auto cube = Cube((Vector3) {0.0f, 25.0f, 0.0f}, 50.0f);
 
-    camera.position = (Vector3){ cameraPos.x, 5.0f, cameraPos.y };
+    auto font = LoadFontEx("../resources/VipBold.otf", 28, 0, NULL);
 
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    camera.fovy = 45.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+
+    auto buttonStart = Button(
+        (Vector2) {100.0f, 100.0f},
+        (Vector2) {200.0f, 80.0f},
+        "Press me",
+        BLUE,
+        DARKBLUE,
+        font,
+        28
+    );
 
     SetTargetFPS(60);
 
+    auto viewport = std::make_unique<MainViewport>(
+        (Vector2) {0, 0.0f},
+        (Vector2) {(float)screenWidth, (float)screenHeight},
+        viewPortCamera,
+        RAYWHITE,
+        "3D",
+        cube
+    );
+
+    /*auto menu = std::make_unique<MenuViewport>(
+        (Vector2) {0.0f, 0.0f},
+        (Vector2) {(float)screenWidth / 2.0f, (float)screenHeight},
+        viewPortCamera,
+        RAYWHITE,
+        "2D",
+        buttonStart
+    );*/
+
+    std::vector<std::unique_ptr<BaseViewport>> viewports;
+
+    // viewports.push_back(std::move(menu));
+    viewports.push_back(std::move(viewport));
+
+    auto screen = Screen(viewports);
+
     while (!WindowShouldClose())
     {
+        screen.draw();
 
-        BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        BeginMode3D(camera);
-
-        DrawSphereWires((Vector3){0.0f, 0.0f, 0.0f}, 2.0f, 16, 16, LIME);
-
-        DrawGrid(10, 1.0f);
-
-        EndMode3D();
-
-        DrawFPS(10, 10);
-
-        EndDrawing();
-        alpha += ALPHA_STEP;
-        auto point = getPointOnCircleWithAngle(alpha, cameraRadius);
-        camera.position.x = point.x;
-        camera.position.z = point.y;
     }
-
     CloseWindow();
 
     return 0;

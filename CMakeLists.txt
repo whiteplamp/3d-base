@@ -26,7 +26,14 @@ endif()
 
 add_executable(${PROJECT_NAME} src/main.cpp
         src/figures/circle.h
-        src/figures/line.h)
+        src/figures/line.h
+        src/figures/cube.h
+        src/button.h
+        src/splitScreenRect.h
+        src/screen.h
+        src/viewports/base_viewport.h
+        src/viewports/main_viewport.h
+        src/viewports/menu_viewport.h)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
 
